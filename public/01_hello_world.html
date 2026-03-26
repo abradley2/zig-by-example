@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="microlight.js"></script>
+</head>
+<body>
+<div class="example example--go">
+    <div class="example__description example__description--go">
+        <p>
+            This is a simple "hello world" program in Go.
+        </p>
+        <p>
+            To ease us into the Zig way of doing things, we will use a buffered writer
+            instead of the usual default.
+        </p>
+    </div>
+    <pre class="example__code example__code--go">
+        <code>
+package main
+
+import (
+	"bufio"
+	"os"
+)
+
+func main() {
+	writer := bufio.NewWriter(os.Stdout)
+
+	writer.WriteString("Hello, ")
+	writer.WriteString("World!\n")
+	writer.Flush()
+}
+        </code>
+    </pre>
+</div>
+
+<div class="example example--zig">
+    <div class="example__description example__description--zig">
+        <p>
+            In Zig, we must supply a buffer to the writer. We
+            will stack-allocate this buffer by declaring 
+            <span class="inline-code">var stdout_buffer: [1_024]u8 = undefined;</span>
+            then we pass this uninitialized memory
+        </p>
+        <p>
+            There is a distinct seperation between the implementation of the writer
+            <span class="inline-code">stdout_writer: File.Writer</span>
+            and the generic interface that wraps the implementation
+            <span class="inline-code">writer: *Io.Writer</span>.
+        </p>
+    </div>
+    <pre class="example__code example__code--zig">
+        <code>
+const std = @import("std");
+const Io = std.Io;
+const File = std.Io.File;
+
+pub fn main(init: std.process.Init) !void {
+    var stdout_buffer: [1_024]u8 = undefined;
+
+    var stdout_writer: File.Writer =
+        File.stdout().writer(init.io, &stdout_buffer);
+
+    const writer: *Io.Writer = &stdout_writer.interface;
+
+    _ = try writer.write("Hello, ");
+    _ = try writer.write("World!\n");
+
+    try writer.flush();
+}
+        </code>
+    </pre>
+</div>
+
+<div class="example example--zig">
+    <div class="example__description example__description--zig">
+        <p>
+            It isn't necessary, but often imports are done at the top of a file in Zig.
+        </p>
+    </div>
+    <pre class="example__code example__code--zig">
+        <code>
+const std = @import("std");
+const Io = std.Io;
+const File = std.Io.File;
+        </code>
+    </pre>
+</div>
+
+<div class="example example--zig">
+    <div class="example__description example__description--zig">
+        <p>
+            The <span class="inline-code">main</span>function in Zig can be declared to accept an
+            <span class="inline-code">std.process.Init</span> parameter, which will be automatically
+            populated with useful goodies for running a program.
+        </p>
+    </div>
+    <pre class="example__code example__code--zig">
+        <code>
+pub fn main(init: std.process.Init) !void {
+        </code>
+    </pre>
+</div>
+
+<div class="example example--zig">
+    <div class="example__description example__description--zig">
+        <p>
+            In Zig, we must supply the buffer to the writer. We
+            will stack-allocate this buffer by declaring 
+            <span class="inline-code">var stdout_buffer: [1_024]u8 = undefined;</span>
+            then we pass this uninitialized memory
+        </p>
+    </div>
+    <pre class="example__code example__code--zig">
+        <code>
+var stdout_buffer: [1_024]u8 = undefined;
+
+var stdout_writer: File.Writer =
+    File.stdout().writer(init.io, &stdout_buffer);
+        </code>
+    </pre>
+</div>
+</body>
+</html>
