@@ -1,5 +1,4 @@
 .zig-cache/
 zig-out/
-src/
 main.go
 go.mod
